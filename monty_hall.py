@@ -1,7 +1,7 @@
 """Program symulujący rozgrywkę według Problemu Monty'ego Halla i
 pozwalający na garficzne zareprezentowanie statystyk wyników,
 przemawiających na korzyść argumentu, że zamiana bramki daje dwukrotnie
-większe prawdopodobieństwo wygranej.
+większe prawdopodobieństwo wygranej (około 66% zamiast 33%).
 """
 
 from random import choice
@@ -55,13 +55,35 @@ def losowanie(decyzja):
 #dodanie wyników każdej rozgrywki do listy 'wyniki'.
 for x in range(liczba):
 	wyniki.append(losowanie(decyzja))
-#Skopiowanie listy wyników do nowej zmiennej, aby zachować oryginalną
-#kolejnośc zwycięstw i przegranych.
-ostateczne_wyniki=wyniki
-#Usunięcie każdej przegranej z listy, tak aby pozostała lista
-#zawierająca same zwycięstwa.
-while "Przegrana" in wyniki:
-		wyniki.remove("Przegrana")
-#Oblicznie procent zwycięstw w stosunku do liczby przeprowadzonych gier.
-procent_zwyciestw = len(wyniki)/int(liczba)*100
-print("Liczba zwysięstw to "+str(procent_zwyciestw))
+#Utowrzenie list, które będą zawierały informacje o procentach i liczbie
+#zwycięstw przy każdej kolejnej rozgrywce.
+procent_zwyciestw = []
+zwycieskie_wyniki = []
+liczba_wynikow = []
+#Uzupełnienie list z danymi, w zależności od wyniku kazdej rozgrywki.
+aktualny_wynik = 0
+for wynik in wyniki:
+	#Jeżeli wynik poszczególnej rozgrywki był pozytywny, zostaje
+	#dołączony do zbioru zwycięstw.
+	if wynik == "Wygrana":
+		zwycieskie_wyniki.append(wynik)
+	aktualny_wynik += 1
+	liczba_wynikow.append(aktualny_wynik)
+	#Oblicznie procent zwycięstw w stosunku do liczby przeprowadzonych
+	#gier.
+	procent_zwyciestw.append(len(zwycieskie_wyniki)/aktualny_wynik*100)
+#Utworzenie wykresu który pokazuje łączny procent zwycięstw przy kazdym
+#kolejnym wyniku.
+fig=pyplot.figure(dpi=90, figsize=(14, 9))
+pyplot.plot(liczba_wynikow, procent_zwyciestw, c="blue", alpha=0.9)
+#Tytuł wykrasu będzie zależał od wybranego typu rozgrywki.
+if decyzja == "y":
+	pyplot.title("Procent zwycięstw przy wyborze zamiany bramki",
+	             fontsize=15)
+else:
+	pyplot.title("Procent zwycięstw przy wyborze pozostawienia bramki",
+	             fontsize=15)
+pyplot.ylabel("Procent zwycięstw", fontsize=10)
+pyplot.xlabel("Liczba rozgrywek", fontsize=10)
+#Pokazanie wykresu.
+pyplot.show()
